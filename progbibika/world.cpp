@@ -106,13 +106,13 @@ void World::make_explode(int x1, int y1, int x2, int y2)
 	Rectangle(hdc, (x1 + x2) / 8, (y1 + y2) / 8, (x1 + x2) * 7 / 8, (y1 + y2) * 7 / 8);
 }
 
-void CarBody::MoveTo(int NewX, int NewY)
-{
-	Hide();
-	X = NewX;
-	Y = NewY;
-	int check = world->check_car_bump(this);
-	if (check)
-		return;
-	Show();
-};
+//void CarBody::MoveTo(int NewX, int NewY)
+//{
+//	Hide();
+//	X = NewX;
+//	Y = NewY;
+//	int check = world->check_car_bump(this);
+//	if (check)
+//		return;
+//	Show();
+//};

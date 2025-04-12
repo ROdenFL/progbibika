@@ -24,6 +24,9 @@
     <ClCompile Include="world.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="cool_cars.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base_figures.cpp">
@@ -36,6 +39,9 @@
       <Filter>Исходные файлы</Filter>
     </ClInclude>
     <ClInclude Include="world.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="cool_cars.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
   </ItemGroup>

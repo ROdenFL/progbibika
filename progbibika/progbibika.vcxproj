@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="base_car.cpp" />
+    <ClCompile Include="cool_cars.cpp" />
     <ClCompile Include="progbibika.cpp" />
     <ClCompile Include="world.cpp" />
   </ItemGroup>
@@ -135,6 +136,7 @@
     <ClInclude Include="base_figures.cpp" />
     <ClInclude Include="base_figures.h" />
     <ClInclude Include="base_car.h" />
+    <ClInclude Include="cool_cars.h" />
     <ClInclude Include="world.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

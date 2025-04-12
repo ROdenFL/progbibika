@@ -36,8 +36,18 @@ public:
     void SetBaseRGB(int R, int G, int B);
     void SetHideRGB(int R, int G, int B);
     void SetWorld(World* newWorld);
-    virtual void MoveTo(int NewX, int NewY);
     void Drag(int Step);
+
+    /* ¬»–“”¿À‹Õ€≈ */
+    /*
+    virtual void MoveTo(int NewX, int NewY);
     virtual void Show();
     virtual void Hide(); 
+    */
+    /* Õ≈¬»–“”¿À‹Õ€≈ */
+    
+    void MoveTo(int NewX, int NewY);
+    void Show();
+    void Hide();
+    
 };
