@@ -5,7 +5,7 @@
 
 extern HDC hdc;
 extern World world;
-extern CarBody* curCar;
+extern Car* curCar;
 using namespace std;
 
 const COLORREF WINDOW_COLOR = RGB(0, 128, 168);
@@ -97,14 +97,14 @@ void Wheel::Hide(int baseX, int baseY)
     DeleteObject(Pen);
 }
 
-CarBody::CarBody(int initX, int initY, int initWidth, int initHeight) :CarPart(initX, initY)
+Car::Car(int initX, int initY, int initWidth, int initHeight) :CarPart(initX, initY)
 {
     width = initWidth;
     height = initHeight;
     PopulateParts();
 }
 
-CarBody::~CarBody()
+Car::~Car()
 {
     for (int i = 0; i < parts_quantity; i++)
     {
@@ -113,7 +113,7 @@ CarBody::~CarBody()
 }
 
 // Создание частей машины являющихся отдельными объектами
-void CarBody::PopulateParts()
+void Car::PopulateParts()
 {
     for (int i = 0; i < parts_quantity; i++)
     {
@@ -124,30 +124,28 @@ void CarBody::PopulateParts()
     parts[parts_quantity++] = new Wheel(width * 3 / 4, height, width / 6, width / 12);
 }
 
-void CarBody::bump_action(BumpObject** bumpedOne)
+void Car::bump_action(BumpObject* bumpedOne)
 {
-    BumpObject* pBumpOne = *bumpedOne;
-    int left = min(pBumpOne->GetX(), GetX());
-    int right = max(pBumpOne->GetX() + pBumpOne->GetWidth(), GetX() + GetWidth());
-    int bottom = min(pBumpOne->GetY(), GetY());
-    int top = max(pBumpOne->GetY() + pBumpOne->GetHeight(), GetY() + GetHeight());
+    int left = min(bumpedOne->GetX(), GetX());
+    int right = max(bumpedOne->GetX() + bumpedOne->GetWidth(), GetX() + GetWidth());
+    int bottom = min(bumpedOne->GetY(), GetY());
+    int top = max(bumpedOne->GetY() + bumpedOne->GetHeight(), GetY() + GetHeight());
 
-    pBumpOne->Hide();
+    bumpedOne->Hide();
     Hide();
     world.make_explode(right, top, left, bottom);
-    world.findndelete(pBumpOne);
+    world.findndelete(bumpedOne);
     world.findndelete(this);
-    *bumpedOne = NULL;
 }
 
-void CarBody::Show()
+void Car::Show()
 {
     DrawBody();
     DrawParts();
     DrawObjectParts();
 }
 
-void CarBody::Hide()
+void Car::Hide()
 {
     HideBody();
     HideParts();
@@ -155,7 +153,7 @@ void CarBody::Hide()
 }
 
 // Отрисовка основного тела машины
-void CarBody::DrawBody()
+void Car::DrawBody()
 {
     HPEN Pen = CreatePen(PS_SOLID, 2, GetBaseRGB());
     HBRUSH hBrush = CreateSolidBrush(GetBaseRGB());
@@ -167,7 +165,7 @@ void CarBody::DrawBody()
 }
 
 // Отрисовка частей машины являющихся отдельными объектами
-void CarBody::DrawObjectParts()
+void Car::DrawObjectParts()
 {
     for (int i = 0; i < parts_quantity; i++)
     {
@@ -177,7 +175,7 @@ void CarBody::DrawObjectParts()
 }
 
 // Отрисовка монолитных деталей машины
-void CarBody::DrawParts()
+void Car::DrawParts()
 {
     DrawRoof();
     DrawWindow();
@@ -185,7 +183,7 @@ void CarBody::DrawParts()
 }
 
 // Отрисовка окна
-void CarBody::DrawWindow()
+void Car::DrawWindow()
 {
     HPEN Pen = CreatePen(PS_SOLID, 2, WINDOW_COLOR);
     HBRUSH hBrush = CreateSolidBrush(WINDOW_COLOR);
@@ -197,7 +195,7 @@ void CarBody::DrawWindow()
 }
 
 // Отрисовка фар
-void CarBody::DrawLights()
+void Car::DrawLights()
 {
     HPEN Pen = CreatePen(PS_SOLID, 2, LIGHTS_COLOR);
     HBRUSH hBrush = CreateSolidBrush(LIGHTS_COLOR);
@@ -208,7 +206,7 @@ void CarBody::DrawLights()
     DeleteObject(Pen);
 }
 
-void CarBody::DrawRoof()
+void Car::DrawRoof()
 {
     HPEN Pen = CreatePen(PS_SOLID, 2, GetBaseRGB());
     HBRUSH hBrush = CreateSolidBrush(GetBaseRGB());
@@ -220,7 +218,7 @@ void CarBody::DrawRoof()
 }
 
 // Прятанье основного тела машины
-void CarBody::HideBody()
+void Car::HideBody()
 {
     HPEN Pen = CreatePen(PS_SOLID, 2, GetHideRGB());
     HBRUSH hBrush = CreateSolidBrush(GetHideRGB());
@@ -231,22 +229,22 @@ void CarBody::HideBody()
     DeleteObject(Pen);
 }
 
-void CarBody::HideParts()
+void Car::HideParts()
 {
     HideWindow();
     HideLights();
     HideRoof();
 }
 
-void CarBody::HideWindow()
+void Car::HideWindow()
 {
 }
 
-void CarBody::HideLights()
+void Car::HideLights()
 {
 }
 
-void CarBody::HideRoof()
+void Car::HideRoof()
 {
     HPEN Pen = CreatePen(PS_SOLID, 2, GetHideRGB());
     HBRUSH hBrush = CreateSolidBrush(GetHideRGB());
@@ -258,7 +256,7 @@ void CarBody::HideRoof()
 }
 
 // Прятанье частей машины являющихся отдельными объектами
-void CarBody::HideObjectParts()
+void Car::HideObjectParts()
 {
     for (int i = 0; i < parts_quantity; i++)
     {

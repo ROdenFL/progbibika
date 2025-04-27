@@ -160,7 +160,7 @@ BumpObject::BumpObject(int InitX, int InitY) : Point(InitX, InitY) {}; // констр
 BumpObject::~BumpObject() {}; //деконструктор 
 
 // действие, вызывающееся в момент аварии
-void BumpObject::bump_action(BumpObject** bumpedOne) {};
+void BumpObject::bump_action(BumpObject* bumpedOne) {};
 
 int BumpObject::GetWidth()
 {

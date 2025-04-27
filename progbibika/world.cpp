@@ -42,7 +42,7 @@ void World::check_bump(BumpObject* bumpObject)
 	if (!crushObject)
 		return;
 
-	crushObject->bump_action(&bumpObject);
+	crushObject->bump_action(bumpObject);
 
 }
 
@@ -87,9 +87,9 @@ void World::make_explode(int x1, int y1, int x2, int y2)
 	radius /= 1.5;
 	Ellipse(hdc, centerX - radius, centerY - radius, centerX + radius, centerY + radius);
 	Sleep(2000);
-	CreatePen(PS_SOLID, 2, RGB(0, 0, 255));
-	hBrush = CreateSolidBrush(RGB(0, 0, 255));
+	Pen = CreatePen(PS_SOLID, 2, RGB(255, 255, 255));
+	hBrush = CreateSolidBrush(RGB(255, 255, 255));
 	SelectObject(hdc, Pen);
 	SelectObject(hdc, hBrush);
-	Rectangle(hdc, (x1 + x2) / 8, (y1 + y2) / 8, (x1 + x2) * 7 / 8, (y1 + y2) * 7 / 8);
+	Rectangle(hdc, (x1 + x2) / 8, (y1 + y2) / 12, (x1 + x2) * 7 / 8, (y1 + y2));
 }

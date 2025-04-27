@@ -1,7 +1,7 @@
 #pragma once
 #include "base_car.h"
 
-class LowRider : public CarBody
+class LowRider : public Car
 {
 public:
 	LowRider(int initX = 10, int initY = 10, int initWidth = 300, int initHeight = 200); // конструктор
@@ -20,7 +20,7 @@ public:
 	void HideRoof();	// ѕр€танье крыши
 };
 
-class Gazel : public CarBody
+class Gazel : public Car
 {
 public:
 	Gazel(int initX = 10, int initY = 10, int initWidth = 300, int initHeight = 200); // конструктор
@@ -43,7 +43,7 @@ class Saw : public BumpObject {
 public:
     Saw(int InitX = 300, int InitY = 300, int initWidth = 200, int initHeight = 200);
 
-    void bump_action(BumpObject** bumpedOne);
+    void bump_action(BumpObject* bumpedOne);
 	void Show();
 	void Hide();
 };
@@ -54,7 +54,7 @@ class Roof : public BumpObject {
 public:
 	Roof(int InitX = 300, int InitY = 300, int initWidth = 200, int initHeight = 200);
 
-	void bump_action(BumpObject** bumpedOne);
+	void bump_action(BumpObject* bumpedOne);
 	void Show();
 	void Hide();
 };

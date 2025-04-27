@@ -13,7 +13,7 @@ using namespace std;
 
 HDC hdc;
 World world;
-CarBody* curCar;
+Car* curCar;
 
 /***********************************************************************/
 /*               О С Н О В Н А Я    П Р О Г Р А М М А                  */
@@ -41,11 +41,11 @@ int main()
         return 2; 
     }
 
-    curCar = new CarBody(x0, y0, 150, 100);
+    curCar = new Car(x0, y0, 150, 100);
 
     Saw saw(400, 200, 100, 100);
     Roof roof(600, 200, 100, 100);
-    CarBody car(800, 200, 150, 100);
+    Car car(800, 200, 150, 100);
     world.add_object(curCar);
     world.add_object(&saw);
     world.add_object(&roof);

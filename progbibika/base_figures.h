@@ -52,7 +52,7 @@ protected:
 public:
     BumpObject(int InitX, int InitY); // конструктор
     ~BumpObject(); //деконструктор 
-    virtual void bump_action(BumpObject** bumpedOne); // действией, вызывающееся в момент аварии
+    virtual void bump_action(BumpObject* bumpedOne); // действией, вызывающееся в момент аварии
     virtual void MoveTo(int NewX, int NewY);
 
     int GetWidth(); // гетер для ширины

@@ -30,20 +30,20 @@ public:
 	virtual void Hide(int baseX = 0, int baseY = 0);
 };
 
-class CarBody : public CarPart
+class Car : public CarPart
 {
 protected:
 	CarPart* parts[CAR_PARTS_CAP] = {};
 	int parts_quantity = 0;
 public:
-	CarBody(int initX = 10, int initY = 10, int initWidth = 300, int initHeight = 200); // конструктор
-	~CarBody(); // деструктор
+	Car(int initX = 10, int initY = 10, int initWidth = 300, int initHeight = 200); // конструктор
+	~Car(); // деструктор
 	
 	void Show(); // перегрузка родительской функции Show
 	void Hide(); // перегрузка родительской функции Hide
 	
 	virtual void PopulateParts(); // —бор основных частей машины, €вл€ющихс€ отдельными объектами
-	void bump_action(BumpObject** bumpedOne);
+	void bump_action(BumpObject* bumpedOne);
 	
 	//‘ункции отрисовки частей машины
 	virtual void DrawBody();	// ќтрисовка основного тела машины

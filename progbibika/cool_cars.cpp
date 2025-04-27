@@ -3,7 +3,7 @@
 
 extern HDC hdc;
 extern World world;
-extern CarBody* curCar;
+extern Car* curCar;
 
 const COLORREF WINDOW_COLOR = RGB(0, 128, 168);
 const COLORREF LIGHTS_COLOR = RGB(250, 250, 0);
@@ -11,7 +11,7 @@ const COLORREF LIGHTS_COLOR = RGB(250, 250, 0);
 
 //Класс лоурайдер
 
-LowRider::LowRider(int initX, int initY, int initWidth, int initHeight) :CarBody(initX, initY, initWidth, initHeight)
+LowRider::LowRider(int initX, int initY, int initWidth, int initHeight) :Car(initX, initY, initWidth, initHeight)
 {
     SetBaseRGB(192, 5, 248);
     SetAltRGB(104, 88, 243);
@@ -178,7 +178,7 @@ void LowRider::HideRoof()
 
 //Класс
 
-Gazel::Gazel(int initX, int initY, int initWidth, int initHeight) :CarBody(initX, initY, initWidth, initHeight)
+Gazel::Gazel(int initX, int initY, int initWidth, int initHeight) :Car(initX, initY, initWidth, initHeight)
 {
     SetBaseRGB(60, 60, 60);
     SetAltRGB(0, 0, 0);
@@ -284,17 +284,15 @@ Saw::Saw(int InitX, int InitY, int initWidth, int initHeight) : BumpObject(InitX
     height = initHeight;
 }
 
-void Saw::bump_action(BumpObject** bumpedOne)
+void Saw::bump_action(BumpObject* bumpedOne)
 {
-    BumpObject* pBumpOne = *bumpedOne;
-
     // Создаем LowRider на месте машины
-    LowRider* lowRider = new LowRider(pBumpOne->GetX(), pBumpOne->GetY(),
-        pBumpOne->GetWidth(), pBumpOne->GetHeight());
+    LowRider* lowRider = new LowRider(bumpedOne->GetX(), bumpedOne->GetY(),
+        bumpedOne->GetWidth(), bumpedOne->GetHeight());
     world.add_object(lowRider);
-    pBumpOne->Hide();
+    bumpedOne->Hide();
     Hide();
-    world.findndelete(pBumpOne);
+    world.findndelete(bumpedOne);
     world.findndelete(this);
     curCar = lowRider;
     lowRider->Show();
@@ -348,17 +346,14 @@ Roof::Roof(int InitX, int InitY, int initWidth, int initHeight) : BumpObject(Ini
     height = initHeight;
 }
 
-void Roof::bump_action(BumpObject** bumpedOne)
+void Roof::bump_action(BumpObject* bumpedOne)
 {
-    BumpObject* pBumpOne = *bumpedOne;
-
-    // Создаем LowRider на месте машины
-    Gazel* gazel = new Gazel(pBumpOne->GetX(), pBumpOne->GetY(),
-        pBumpOne->GetWidth(), pBumpOne->GetHeight());
+    Gazel* gazel = new Gazel(bumpedOne->GetX(), bumpedOne->GetY(),
+        bumpedOne->GetWidth(), bumpedOne->GetHeight());
     world.add_object(gazel);
-    pBumpOne->Hide();
+    bumpedOne->Hide();
     Hide();
-    world.findndelete(pBumpOne);
+    world.findndelete(bumpedOne);
     world.findndelete(this);
     curCar = gazel;
     gazel->Show();
