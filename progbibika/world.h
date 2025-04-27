@@ -1,15 +1,15 @@
 #pragma once
-#define CARS_LIMIT 5
-#include "base_car.h"
+#define OBJECTS_LIMIT 6
+#include "base_figures.h"
 
 class World
 {
 protected:
-	CarBody* cars[CARS_LIMIT];
-	int total_cars = 0;
+	BumpObject* objects[OBJECTS_LIMIT];
+	int total_objects = 0;
 public:
-	int add_car(CarBody* car);
-	int check_car_bump(CarBody *car);
-	void findndelete(CarBody* car);
+	int add_object(BumpObject* newObject);
+	int check_bump(BumpObject* bumpObject);
+	void findndelete(BumpObject* bumpObject);
 	void make_explode(int x1, int y1, int x2, int y2);
 };

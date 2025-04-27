@@ -1,14 +1,16 @@
 #include <windows.h>
+#include <iostream>
 #include "base_car.h"
 #include "base_figures.cpp"
 
 extern HDC hdc;
-class World;
+extern World world;
+using namespace std;
 
 const COLORREF WINDOW_COLOR = RGB(0, 128, 168);
 const COLORREF LIGHTS_COLOR = RGB(250, 250, 0);
 
-CarPart::CarPart(int InitX, int InitY) :Point(InitX, InitY)
+CarPart::CarPart(int InitX, int InitY) :BumpObject(InitX, InitY)
 {
 };
 
@@ -40,102 +42,120 @@ void CarPart::SetAltHideRGB(int R, int G, int B)
     altHideRGB[2] = B;
 }
 
-void CarPart::Show(int baseX, int baseY) {}
+void CarPart::Show(int baseX, int baseY) 
+{
+    int check = world.check_bump(this);
+    if (check)
+        return;
+
+}
 void CarPart::Hide(int baseX, int baseY) {}
 
-//Wheel::Wheel(int initX, int initY, int initTireRadius, int initDiskRadius) :CarPart(initX, initY)
-//{
-//    tireRadius = initTireRadius;
-//    diskRadius = initDiskRadius;
-//    SetBaseRGB(0, 0, 0);
-//    SetAltRGB(128, 128, 128);
-//}
-//
-//Wheel::~Wheel(void)
-//{
-//};
-//
-//void Wheel::Show(int baseX, int baseY)
-//{
-//    Visible = true;
-//    int posX = baseX + X;
-//    int posY = baseY + Y;
-//    HPEN Pen = CreatePen(PS_SOLID, 2, GetBaseRGB());
-//    HBRUSH hBrush = CreateSolidBrush(GetBaseRGB());
-//    SelectObject(hdc, Pen);
-//    SelectObject(hdc, hBrush);
-//    Ellipse(hdc, posX - tireRadius, posY - tireRadius, posX + tireRadius, posY + tireRadius);
-//    DeleteObject(Pen);
-//    DeleteObject(hBrush);
-//    Pen = CreatePen(PS_SOLID, 2, GetAltRGB());
-//    hBrush = CreateSolidBrush(GetAltRGB());
-//    SelectObject(hdc, Pen);
-//    SelectObject(hdc, hBrush);
-//    Ellipse(hdc, posX - diskRadius, posY - diskRadius, posX + diskRadius, posY + diskRadius);
-//    DeleteObject(Pen);
-//    DeleteObject(hBrush);
-//}
-//void Wheel::Hide(int baseX, int baseY)
-//{
-//    Visible = false;
-//    int posX = baseX + X;
-//    int posY = baseY + Y;
-//    HPEN Pen = CreatePen(PS_SOLID, 2, GetHideRGB());
-//    HBRUSH hBrush = CreateSolidBrush(GetHideRGB());
-//    SelectObject(hdc, Pen);
-//    SelectObject(hdc, hBrush);
-//    Ellipse(hdc, posX - tireRadius, posY - tireRadius, posX + tireRadius, posY + tireRadius);
-//    DeleteObject(Pen);
-//}
+Wheel::Wheel(int initX, int initY, int initTireRadius, int initDiskRadius) :CarPart(initX, initY)
+{
+    tireRadius = initTireRadius;
+    diskRadius = initDiskRadius;
+    width = tireRadius * 2;
+    height = width;
+    SetBaseRGB(0, 0, 0);
+    SetAltRGB(128, 128, 128);
+}
+
+Wheel::~Wheel(void)
+{
+};
+
+void Wheel::Show(int baseX, int baseY)
+{
+    Visible = true;
+    int posX = baseX + X;
+    int posY = baseY + Y;
+    HPEN Pen = CreatePen(PS_SOLID, 2, GetBaseRGB());
+    HBRUSH hBrush = CreateSolidBrush(GetBaseRGB());
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Ellipse(hdc, posX - tireRadius, posY - tireRadius, posX + tireRadius, posY + tireRadius);
+    DeleteObject(Pen);
+    DeleteObject(hBrush);
+    Pen = CreatePen(PS_SOLID, 2, GetAltRGB());
+    hBrush = CreateSolidBrush(GetAltRGB());
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Ellipse(hdc, posX - diskRadius, posY - diskRadius, posX + diskRadius, posY + diskRadius);
+    DeleteObject(Pen);
+    DeleteObject(hBrush);
+}
+
+void Wheel::Hide(int baseX, int baseY)
+{
+    Visible = false;
+    int posX = baseX + X;
+    int posY = baseY + Y;
+    HPEN Pen = CreatePen(PS_SOLID, 2, GetHideRGB());
+    HBRUSH hBrush = CreateSolidBrush(GetHideRGB());
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Ellipse(hdc, posX - tireRadius, posY - tireRadius, posX + tireRadius, posY + tireRadius);
+    DeleteObject(Pen);
+}
 
 CarBody::CarBody(int initX, int initY, int initWidth, int initHeight) :CarPart(initX, initY)
 {
     width = initWidth;
     height = initHeight;
-    //PopulateParts();
+    PopulateParts();
 }
 
 CarBody::~CarBody()
 {
-    /*for (int i = 0; i < parts_quantity; i++)
+    for (int i = 0; i < parts_quantity; i++)
     {
         delete parts[i];
-    }*/
+    }
 }
 
-int CarBody::GetWidth()
+// Создание частей машины являющихся отдельными объектами
+void CarBody::PopulateParts()
 {
-    return width;
+    for (int i = 0; i < parts_quantity; i++)
+    {
+        delete parts[i];
+    }
+    parts_quantity = 0;
+    parts[parts_quantity++] = new Wheel(width / 4, height);
+    parts[parts_quantity++] = new Wheel(width * 3 / 4, height);
 }
 
-int CarBody::GetHeight()
+bool CarBody::bump_action(BumpObject** bumpedOne)
 {
-    return height;
-}
+    BumpObject* pBumpOne = *bumpedOne;
+    int left = min(pBumpOne->GetX(), GetX());
+    int right = max(pBumpOne->GetX() + pBumpOne->GetWidth(), GetX() + GetWidth());
+    int bottom = min(pBumpOne->GetY(), GetY());
+    int top = max(pBumpOne->GetY() + pBumpOne->GetHeight(), GetY() + GetHeight());
 
-//void CarBody::PopulateParts()
-//{
-//    for (int i = 0; i < parts_quantity; i++)
-//    {
-//        delete parts[i];
-//    }
-//    parts_quantity = 0;
-//    parts[parts_quantity++] = new Wheel(width / 4, height);
-//    parts[parts_quantity++] = new Wheel(width * 3 / 4, height);
-//}
+    pBumpOne->Hide();
+    Hide();
+    world.make_explode(right, top, left, bottom);
+    world.findndelete(pBumpOne);
+    //world.findndelete(this);
+
+    *bumpedOne = NULL;
+    return true;
+}
 
 void CarBody::Show()
 {
     DrawBody();
     DrawParts();
-    //DrawObjectParts();
+    DrawObjectParts();
 }
 
 void CarBody::Hide()
 {
     HideBody();
     HideParts();
-    //HideObjectParts();
+    HideObjectParts();
 }
 
 // Отрисовка основного тела машины
@@ -151,14 +171,14 @@ void CarBody::DrawBody()
 }
 
 // Отрисовка частей машины являющихся отдельными объектами
-//void CarBody::DrawObjectParts()
-//{
-//    for (int i = 0; i < parts_quantity; i++)
-//    {
-//        CarPart* part = parts[i];
-//        part->Show(X, Y);
-//    }
-//}
+void CarBody::DrawObjectParts()
+{
+    for (int i = 0; i < parts_quantity; i++)
+    {
+        CarPart* part = parts[i];
+        part->Show(X, Y);
+    }
+}
 
 // Отрисовка монолитных деталей машины
 void CarBody::DrawParts()
@@ -166,7 +186,6 @@ void CarBody::DrawParts()
     DrawRoof();
     DrawWindow();
     DrawLights();
-    DrawWheels();
 }
 
 // Отрисовка окна
@@ -204,32 +223,6 @@ void CarBody::DrawRoof()
     DeleteObject(Pen);
 }
 
-void CarBody::DrawWheels()
-{
-    int posX = X + width / 4;
-    int posY = Y + height;
-    int tireRadius = width / 6;
-    int diskRadius = width / 10;
-    HPEN Pen;
-    HBRUSH hBrush;
-    for (int i = 0; i < 2; i++)
-    {
-        Pen = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
-        hBrush = CreateSolidBrush(RGB(0, 0, 0));
-        SelectObject(hdc, Pen);
-        SelectObject(hdc, hBrush);
-        Ellipse(hdc, posX - tireRadius, posY - tireRadius, posX + tireRadius, posY + tireRadius);
-        Pen = CreatePen(PS_SOLID, 2, RGB(128, 128, 128));
-        hBrush = CreateSolidBrush(RGB(128, 128, 128));
-        SelectObject(hdc, Pen);
-        SelectObject(hdc, hBrush);
-        Ellipse(hdc, posX - diskRadius, posY - diskRadius, posX + diskRadius, posY + diskRadius);
-        posX += width / 2;
-    }
-    DeleteObject(Pen);
-    DeleteObject(hBrush);
-}
-
 // Прятанье основного тела машины
 void CarBody::HideBody()
 {
@@ -247,7 +240,6 @@ void CarBody::HideParts()
     HideWindow();
     HideLights();
     HideRoof();
-    HideWheels();
 }
 
 void CarBody::HideWindow()
@@ -269,87 +261,12 @@ void CarBody::HideRoof()
     DeleteObject(Pen);
 }
 
-void CarBody::HideWheels()
-{
-    int posX = X + width / 4;
-    int posY = Y + height;
-    int tireRadius = width / 6;
-    HPEN Pen = CreatePen(PS_SOLID, 2, GetHideRGB());
-    HBRUSH hBrush = CreateSolidBrush(GetHideRGB());
-    SelectObject(hdc, Pen);
-    SelectObject(hdc, hBrush);
-    for (int i = 0; i < 2; i++)
-    {
-        
-        Ellipse(hdc, posX - tireRadius, posY - tireRadius, posX + tireRadius, posY + tireRadius);
-        posX += width / 2;
-    }
-    DeleteObject(Pen);
-    DeleteObject(hBrush);
-}
-
 // Прятанье частей машины являющихся отдельными объектами
-//void CarBody::HideObjectParts()
-//{
-//    for (int i = 0; i < parts_quantity; i++)
-//    {
-//        CarPart* part = parts[i];
-//        part->Hide(X, Y);
-//    }
-//}
-
-/* ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ РАБОТЫ НЕВИРТУАЛЬНЫХ ФУНКЦИЙ */
-
-void CarBody::Drag(int Step)
+void CarBody::HideObjectParts()
 {
-    int FigX, FigY;
-
-    FigX = GetX();
-    FigY = GetY();
-
-    while (true)
+    for (int i = 0; i < parts_quantity; i++)
     {
-        if (!this)
-            break;
-
-        if (KEY_DOWN(VK_ESCAPE))
-            break;
-
-        if (KEY_DOWN(VK_LEFT))
-        {
-            FigX -= Step;
-            MoveTo(FigX, FigY);
-            Sleep(500);
-        }
-
-        if (KEY_DOWN(VK_RIGHT))
-        {
-            FigX += Step;
-            MoveTo(FigX, FigY);
-            Sleep(500);
-        }
-
-        if (KEY_DOWN(VK_UP))
-        {
-            FigY -= Step;
-            MoveTo(FigX, FigY);
-            Sleep(500);
-        }
-
-        if (KEY_DOWN(VK_DOWN))
-        {
-            FigY += Step;
-            MoveTo(FigX, FigY);
-            Sleep(500);
-        }
-
+        CarPart* part = parts[i];
+        part->Hide(X, Y);
     }
 }
-
-void CarBody::MoveTo(int NewX, int NewY)
-{
-    Hide();
-    X = NewX;
-    Y = NewY;
-    Show();
-};

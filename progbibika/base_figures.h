@@ -23,31 +23,38 @@ class Point : public Location
 {
 protected:
     bool Visible;
+    //Основной цвет объекта
     int baseRGB[3] = { 255, 0, 0 };
+    //Цвет спрятанного объекта
     int hideRGB[3] = { 0, 0, 255 };
-    World* world;
+    
 public:
-    Point(int InitX, int InitY);
-    ~Point();                   
-    bool GetVisible();               
-    void SetVisible(bool NewVisible);
-    COLORREF GetBaseRGB();
-    COLORREF GetHideRGB();
-    void SetBaseRGB(int R, int G, int B);
-    void SetHideRGB(int R, int G, int B);
-    void SetWorld(World* newWorld);
-    void Drag(int Step);
-
-    /* ВИРТУАЛЬНЫЕ */
-    /*
-    virtual void MoveTo(int NewX, int NewY);
+    Point(int InitX, int InitY); // конструктор
+    ~Point(); //деконструктор     
+    bool GetVisible(); //геттер для Visible    
+    void SetVisible(bool NewVisible); //сеттер для Visible 
+    COLORREF GetBaseRGB(); //геттер основного цвета объекта
+    COLORREF GetHideRGB(); //геттер цвета спрятонного объекта
+    void SetBaseRGB(int R, int G, int B); // сеттер основного цвета объекта
+    void SetHideRGB(int R, int G, int B); // сеттер цвета спрятонного объекта
+    void Drag(int Step); // функция перемещения объекта на стрелки
+    
+    virtual bool MoveTo(int NewX, int NewY);
     virtual void Show();
     virtual void Hide(); 
-    */
-    /* НЕВИРТУАЛЬНЫЕ */
-    
-    void MoveTo(int NewX, int NewY);
-    void Show();
-    void Hide();
-    
+};
+
+class BumpObject : public Point
+{
+protected:
+    int width = 0;
+    int height = 0;
+public:
+    BumpObject(int InitX, int InitY); // конструктор
+    ~BumpObject(); //деконструктор 
+    virtual bool bump_action(BumpObject** bumpedOne); // действией, вызывающееся в момент аварии
+    virtual bool MoveTo(int NewX, int NewY);
+
+    int GetWidth(); // гетер для ширины
+    int GetHeight(); // гетер для высоты 
 };

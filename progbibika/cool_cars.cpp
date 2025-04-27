@@ -2,6 +2,7 @@
 #include "cool_cars.h"
 
 extern HDC hdc;
+extern World world;
 
 const COLORREF WINDOW_COLOR = RGB(0, 128, 168);
 const COLORREF LIGHTS_COLOR = RGB(250, 250, 0);
@@ -100,32 +101,6 @@ void LowRider::DrawRoof()
 {
 }
 
-void LowRider::DrawWheels()
-{
-    int posX = X + width / 4;
-    int posY = Y + height;
-    int tireRadius = width / 7;
-    int diskRadius = width / 14;
-    HPEN Pen;
-    HBRUSH hBrush;
-    for (int i = 0; i < 2; i++)
-    {
-        Pen = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
-        hBrush = CreateSolidBrush(RGB(0, 0, 0));
-        SelectObject(hdc, Pen);
-        SelectObject(hdc, hBrush);
-        Ellipse(hdc, posX - tireRadius, posY - tireRadius, posX + tireRadius, posY + tireRadius);
-        Pen = CreatePen(PS_SOLID, 2, RGB(128, 128, 128));
-        hBrush = CreateSolidBrush(RGB(128, 128, 128));
-        SelectObject(hdc, Pen);
-        SelectObject(hdc, hBrush);
-        Ellipse(hdc, posX - diskRadius, posY - diskRadius, posX + diskRadius, posY + diskRadius);
-        posX += width / 2;
-    }
-    DeleteObject(Pen);
-    DeleteObject(hBrush);
-}
-
 // Прятанье основного тела машины
 void LowRider::HideBody()
 {
@@ -200,25 +175,6 @@ void LowRider::HideRoof()
 {
 }
 
-void LowRider::HideWheels()
-{
-    int posX = X + width / 4;
-    int posY = Y + height;
-    int tireRadius = width / 7;
-    HPEN Pen = CreatePen(PS_SOLID, 2, GetHideRGB());
-    HBRUSH hBrush = CreateSolidBrush(GetHideRGB());
-    SelectObject(hdc, Pen);
-    SelectObject(hdc, hBrush);
-    for (int i = 0; i < 2; i++)
-    {
-
-        Ellipse(hdc, posX - tireRadius, posY - tireRadius, posX + tireRadius, posY + tireRadius);
-        posX += width / 2;
-    }
-    DeleteObject(Pen);
-    DeleteObject(hBrush);
-}
-
 //Класс
 
 Gazel::Gazel(int initX, int initY, int initWidth, int initHeight) :CarBody(initX, initY, initWidth, initHeight)
@@ -278,32 +234,6 @@ void Gazel::DrawRoof()
     DeleteObject(Pen);
 }
 
-void Gazel::DrawWheels()
-{
-    int posX = X + width / 4;
-    int posY = Y + height;
-    int tireRadius = width / 5;
-    int diskRadius = width / 9;
-    HPEN Pen;
-    HBRUSH hBrush;
-    for (int i = 0; i < 2; i++)
-    {
-        Pen = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
-        hBrush = CreateSolidBrush(RGB(0, 0, 0));
-        SelectObject(hdc, Pen);
-        SelectObject(hdc, hBrush);
-        Ellipse(hdc, posX - tireRadius, posY - tireRadius, posX + tireRadius, posY + tireRadius);
-        Pen = CreatePen(PS_SOLID, 2, RGB(128, 128, 128));
-        hBrush = CreateSolidBrush(RGB(128, 128, 128));
-        SelectObject(hdc, Pen);
-        SelectObject(hdc, hBrush);
-        Ellipse(hdc, posX - diskRadius, posY - diskRadius, posX + diskRadius, posY + diskRadius);
-        posX += width / 2;
-    }
-    DeleteObject(Pen);
-    DeleteObject(hBrush);
-}
-
 // Прятанье основного тела машины
 void Gazel::HideBody()
 {
@@ -347,188 +277,53 @@ void Gazel::HideWindow()
     DeleteObject(Pen);
 }
 
-
-void Gazel::HideWheels()
+Saw::Saw(int InitX, int InitY, int initWidth, int initHeight) : BumpObject(InitX, InitY) 
 {
-    int posX = X + width / 4;
-    int posY = Y + height;
-    int tireRadius = width / 5;
-    HPEN Pen = CreatePen(PS_SOLID, 2, GetHideRGB());
-    HBRUSH hBrush = CreateSolidBrush(GetHideRGB());
-    SelectObject(hdc, Pen);
-    SelectObject(hdc, hBrush);
-    for (int i = 0; i < 2; i++)
-    {
-
-        Ellipse(hdc, posX - tireRadius, posY - tireRadius, posX + tireRadius, posY + tireRadius);
-        posX += width / 2;
-    }
-    DeleteObject(Pen);
-    DeleteObject(hBrush);
+    width = initWidth;
+    height = initHeight;
 }
 
-/* ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ РАБОТЫ НЕВИРТУАЛЬНЫХ ФУНКЦИЙ */
-
-void LowRider::Show()
+bool Saw::bump_action(BumpObject** bumpedOne)
 {
-    DrawBody();
-    DrawParts();
-}
+    BumpObject* pBumpOne = *bumpedOne;
 
-void LowRider::Hide()
-{
-    HideBody();
-    HideParts();
-}
+    // Создаем LowRider на месте машины
+    LowRider* lowRider = new LowRider(pBumpOne->GetX(), pBumpOne->GetY(),
+        pBumpOne->GetWidth(), pBumpOne->GetHeight());
 
-void LowRider::DrawParts()
-{
-    DrawRoof();
-    DrawWindow();
-    DrawLights();
-    DrawWheels();
-}
+    // Сначала добавляем новый объект
+    world.add_object(lowRider);
 
-void LowRider::HideParts()
-{
-    HideWindow();
-    HideLights();
-    HideRoof();
-    HideWheels();
-}
-
-void LowRider::MoveTo(int NewX, int NewY)
-{
+    // Затем удаляем старый
+    pBumpOne->Hide();
     Hide();
-    X = NewX;
-    Y = NewY;
-    Show();
-};
+    world.findndelete(pBumpOne);
+    world.findndelete(this);
 
-void LowRider::Drag(int Step)
-{
-    int FigX, FigY;
+    // Обновляем указатель
+    *bumpedOne = lowRider;
+    lowRider->Show();
+    lowRider->Drag(40);
 
-    FigX = GetX();
-    FigY = GetY();
-
-    while (true)
-    {
-        if (!this)
-            break;
-
-        if (KEY_DOWN(VK_ESCAPE))
-            break;
-
-        if (KEY_DOWN(VK_LEFT))
-        {
-            FigX -= Step;
-            MoveTo(FigX, FigY);
-            Sleep(500);
-        }
-
-        if (KEY_DOWN(VK_RIGHT))
-        {
-            FigX += Step;
-            MoveTo(FigX, FigY);
-            Sleep(500);
-        }
-
-        if (KEY_DOWN(VK_UP))
-        {
-            FigY -= Step;
-            MoveTo(FigX, FigY);
-            Sleep(500);
-        }
-
-        if (KEY_DOWN(VK_DOWN))
-        {
-            FigY += Step;
-            MoveTo(FigX, FigY);
-            Sleep(500);
-        }
-
-    }
+    // Не удаляем саму пилу (this), если хотим, чтобы она оставалась
+    // world.findndelete(this);
+    return true;
 }
 
-void Gazel::Show()
-{
-    DrawBody();
-    DrawParts();
-}
+void Saw::Show() {
+    // Основная линия пилы (горизонтальная)
+    MoveToEx(hdc, X, Y + height / 2, NULL);
+    LineTo(hdc, X + width, Y + height / 2);
 
-void Gazel::Hide()
-{
-    HideBody();
-    HideParts();
-}
-
-void Gazel::DrawParts()
-{
-    DrawRoof();
-    DrawWindow();
-    DrawLights();
-    DrawWheels();
-}
-
-void Gazel::HideParts()
-{
-    HideWindow();
-    HideLights();
-    HideRoof();
-    HideWheels();
-}
-
-void Gazel::MoveTo(int NewX, int NewY)
-{
-    Hide();
-    X = NewX;
-    Y = NewY;
-    Show();
-};
-
-void Gazel::Drag(int Step)
-{
-    int FigX, FigY;
-
-    FigX = GetX();
-    FigY = GetY();
-
-    while (true)
-    {
-        if (!this)
-            break;
-
-        if (KEY_DOWN(VK_ESCAPE))
-            break;
-
-        if (KEY_DOWN(VK_LEFT))
-        {
-            FigX -= Step;
-            MoveTo(FigX, FigY);
-            Sleep(500);
+    // Зубцы пилы
+    int toothWidth = width / 10;
+    for (int i = 0; i < 10; i++) {
+        int startX = X + i * toothWidth;
+        if (i % 2 == 0) {
+            // Верхний зубец
+            MoveToEx(hdc, startX, Y + height / 2, NULL);
+            LineTo(hdc, startX + toothWidth / 2, Y);
+            LineTo(hdc, startX + toothWidth, Y + height / 2);
         }
-
-        if (KEY_DOWN(VK_RIGHT))
-        {
-            FigX += Step;
-            MoveTo(FigX, FigY);
-            Sleep(500);
-        }
-
-        if (KEY_DOWN(VK_UP))
-        {
-            FigY -= Step;
-            MoveTo(FigX, FigY);
-            Sleep(500);
-        }
-
-        if (KEY_DOWN(VK_DOWN))
-        {
-            FigY += Step;
-            MoveTo(FigX, FigY);
-            Sleep(500);
-        }
-
     }
 }

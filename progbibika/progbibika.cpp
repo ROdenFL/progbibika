@@ -19,8 +19,8 @@ World world;
 /***********************************************************************/
 int main()
 {
-    int x0 = 300;
-    int y0 = 300;
+    int x0 = 200;
+    int y0 = 200;
 
     HWND hwnd = GetConsoleWindow();
 
@@ -40,14 +40,12 @@ int main()
         return 2; 
     }
 
-    CarBody car1(200, 200);
-    //LowRider car1(200, 200);
-    //Gazel car1(200, 200);
+    CarBody *car1 = new CarBody(x0, y0);
 
-    Gazel car2(600, 200);
-    world.add_car(&car1);
-    car1.Show();
-    world.add_car(&car2);
+    Saw car2(600, 200, 200, 200);
+    world.add_object(car1);
+    world.add_object(& car2);
+    car1->Show();
     car2.Show();
 
     cout << "/Press 1  \7";
@@ -56,11 +54,12 @@ int main()
             break;
 
     cout << "/Press Arrow UP, DOOWN, LEFT, RIGTH  Esc - exit  \7";
-    car1.Drag(40);  //буксировка ТОЧКИ  Выход - Esc
+    car1->Drag(40);  //буксировка ТОЧКИ  Выход - Esc
     cout << "/Press 2   \7";
     while (1)
         if (KEY_DOWN(50)) //цифра 2
             break;
+    car1->Hide();
 
     return 0;
 }

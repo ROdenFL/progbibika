@@ -6,6 +6,7 @@
 /***********************************************************************/
 
 extern HDC hdc;    
+extern World world;
 
 #define KEY_DOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
 
@@ -72,11 +73,6 @@ void Point::SetHideRGB(int R, int G, int B)
     hideRGB[2] = B;
 }
 
-void Point::SetWorld(World* newWorld)
-{
-    world = newWorld;
-}
-
 void Point::Show(void)
 {
     Visible = true;
@@ -106,12 +102,13 @@ void Point::SetVisible(bool NewVisible)
     Visible = NewVisible;
 }
 
-void Point::MoveTo(int NewX, int NewY)
+bool Point::MoveTo(int NewX, int NewY)
 {
     Hide();
     X = NewX;
     Y = NewY;
     Show();
+    return false;
 };
 
 void Point::Drag(int Step)
@@ -132,30 +129,62 @@ void Point::Drag(int Step)
         if (KEY_DOWN(VK_LEFT))
         {
             FigX -= Step;
-            MoveTo(FigX, FigY);
+            if(MoveTo(FigX, FigY))
+                break;
             Sleep(500);
         }
 
         if (KEY_DOWN(VK_RIGHT))
         {
             FigX += Step;
-            MoveTo(FigX, FigY);
+            if (MoveTo(FigX, FigY))
+                break;
             Sleep(500);
         }
 
         if (KEY_DOWN(VK_UP))
         {
             FigY -= Step;
-            MoveTo(FigX, FigY);
+            if (MoveTo(FigX, FigY))
+                break;
             Sleep(500);
         }
 
         if (KEY_DOWN(VK_DOWN))
         {
             FigY += Step;
-            MoveTo(FigX, FigY);
+            if (MoveTo(FigX, FigY))
+                break;
             Sleep(500);
         }
 
     }   
 }
+
+BumpObject::BumpObject(int InitX, int InitY) : Point(InitX, InitY) {}; // конструктор
+BumpObject::~BumpObject() {}; //деконструктор 
+
+// действие, вызывающееся в момент аварии
+bool BumpObject::bump_action(BumpObject** bumpedOne) { return false; };
+
+int BumpObject::GetWidth()
+{
+    return width;
+}
+
+int BumpObject::GetHeight()
+{
+    return height;
+}
+
+bool BumpObject::MoveTo(int NewX, int NewY)
+{
+    Hide();
+    X = NewX;
+    Y = NewY;
+    Show();
+    int check = world.check_bump(this);
+    if (check)
+        return true;
+    return false;
+};

@@ -4,30 +4,29 @@ using namespace std;
 
 extern HDC hdc;
 
-int World::add_car(CarBody* car)
+int World::add_object(BumpObject* newObject)
 {
-	if (total_cars >= CARS_LIMIT)
+	if (total_objects >= OBJECTS_LIMIT)
 	{
 		return 3; //слишком много машин
 	}
-	cars[total_cars++] = car;
-	car->SetWorld(this);
+	objects[total_objects++] = newObject;
 	return 0;
 }
 
-int World::check_car_bump(CarBody* mainCar)
+int World::check_bump(BumpObject* bumpObject)
 {
-	CarBody* currentCar;
-	CarBody* carCrush = NULL;
-	for (int i = 0; i < total_cars; i++)
+	BumpObject* curObject;
+	BumpObject* crushObject = NULL;
+	for (int i = 0; i < total_objects; i++)
 	{
-		currentCar = cars[i];
-		if (currentCar == mainCar)	continue;
+		curObject = objects[i];
+		if (curObject == bumpObject)	continue;
 
-		int left	=	max(mainCar->GetX(), currentCar->GetX());
-		int right	=	min(mainCar->GetX() + mainCar->GetWidth(), currentCar->GetX() + currentCar->GetWidth());
-		int bottom = max(mainCar->GetY(), currentCar->GetY());
-		int top = min(mainCar->GetY() + mainCar->GetHeight(), currentCar->GetY() + currentCar->GetHeight());
+		int left	=	max(bumpObject->GetX(), curObject->GetX());
+		int right	=	min(bumpObject->GetX() + bumpObject->GetWidth(), curObject->GetX() + curObject->GetWidth());
+		int bottom = max(bumpObject->GetY(), curObject->GetY());
+		int top = min(bumpObject->GetY() + bumpObject->GetHeight(), curObject->GetY() + curObject->GetHeight());
 
 		int width = right - left;
 		int height = top - bottom;
@@ -35,45 +34,34 @@ int World::check_car_bump(CarBody* mainCar)
 		if (width < 0 || height < 0)
 			continue;
 		
-		carCrush = currentCar;
+		crushObject = curObject;
 		break;
 	}
 	
-	if (!carCrush)
+	if (!crushObject)
 		return 0;
 
-	int left = min(mainCar->GetX(), carCrush->GetX());
-	int right = max(mainCar->GetX() + mainCar->GetWidth(), carCrush->GetX() + carCrush->GetWidth());
-	int bottom = min(mainCar->GetY(), carCrush->GetY());
-	int top = max(mainCar->GetY() + mainCar->GetHeight(), carCrush->GetY() + carCrush->GetHeight());
-
-	mainCar->Hide();
-	carCrush->Hide();
-	make_explode(right, top, left, bottom);
-	findndelete(mainCar);
-	findndelete(carCrush);
-	return 1;
+	
+	return crushObject->bump_action(&bumpObject);
 
 }
 
-void World::findndelete(CarBody* car)
+void World::findndelete(BumpObject* object)
 {
-	bool found = false;
-	for (int i = 0; i < total_cars; i++)
+	for (int i = 0; i < total_objects; i++)
 	{
-		if (found)
+		if (objects[i] == object)
 		{
-			cars[i - 1] = cars[i];
-			continue;
-		}
-		if (cars[i] == car)
-		{
-			found = true;
-			delete car;
-			continue;
+			// Сдвигаем все элементы после найденного
+			for (int j = i; j < total_objects - 1; j++)
+			{
+				objects[j] = objects[j + 1];
+			}
+
+			total_objects--;
+			return; // Выходим после удаления
 		}
 	}
-	total_cars--;
 }
 
 void World::make_explode(int x1, int y1, int x2, int y2)
@@ -105,14 +93,3 @@ void World::make_explode(int x1, int y1, int x2, int y2)
 	SelectObject(hdc, hBrush);
 	Rectangle(hdc, (x1 + x2) / 8, (y1 + y2) / 8, (x1 + x2) * 7 / 8, (y1 + y2) * 7 / 8);
 }
-
-//void CarBody::MoveTo(int NewX, int NewY)
-//{
-//	Hide();
-//	X = NewX;
-//	Y = NewY;
-//	int check = world->check_car_bump(this);
-//	if (check)
-//		return;
-//	Show();
-//};

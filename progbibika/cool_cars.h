@@ -12,22 +12,12 @@ public:
 	void DrawWindow();	// Отрисовка окна
 	void DrawLights();	// Отрисовка фар
 	void DrawRoof();	// Отрисовка крыши
-	void DrawWheels();	// Отрисовка колес
 
 	//Функции прятанья частей машины
 	void HideWindow();	// Прятанье окна
 	void HideLights();	// Прятанье фар
 	void HideBody();	// Прятанье основного тела машины
 	void HideRoof();	// Прятанье крыши
-	void HideWheels();	// Прятанье колес
-
-	/* ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ РАБОТЫ НЕВИРТУАЛЬНЫХ ФУНКЦИЙ */
-	void Show();
-	void Hide();
-	void DrawParts();
-	void HideParts();
-	void MoveTo(int NewX, int NewY);
-	void Drag(int Step);
 };
 
 class Gazel : public CarBody
@@ -41,19 +31,18 @@ public:
 	void DrawWindow();	// Отрисовка окна
 	void DrawLights();	// Отрисовка фар
 	void DrawRoof();	// Отрисовка крыши
-	void DrawWheels();	// Отрисовка колес
 
 	//Функции прятанья частей машины
 	void HideWindow();	// Прятанье окна
 	void HideBody();	// Прятанье основного тела машины
 	void HideRoof();	// Прятанье крыши
-	void HideWheels();	// Прятанье колес
+};
 
-	/* ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ РАБОТЫ НЕВИРТУАЛЬНЫХ ФУНКЦИЙ */
+// Класс пилы
+class Saw : public BumpObject {
+public:
+    Saw(int InitX = 300, int InitY = 300, int initWidth = 200, int initHeight = 200);
+
+    bool bump_action(BumpObject** bumpedOne);
 	void Show();
-	void Hide();
-	void DrawParts();
-	void HideParts();
-	void MoveTo(int NewX, int NewY);
-	void Drag(int Step);
 };
