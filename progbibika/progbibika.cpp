@@ -13,6 +13,7 @@ using namespace std;
 
 HDC hdc;
 World world;
+CarBody* curCar;
 
 /***********************************************************************/
 /*               О С Н О В Н А Я    П Р О Г Р А М М А                  */
@@ -40,12 +41,12 @@ int main()
         return 2; 
     }
 
-    CarBody *car1 = new CarBody(x0, y0);
+    curCar = new CarBody(x0, y0);
 
     Saw car2(600, 200, 200, 200);
-    world.add_object(car1);
-    world.add_object(& car2);
-    car1->Show();
+    world.add_object(curCar);
+    world.add_object(&car2);
+    curCar->Show();
     car2.Show();
 
     cout << "/Press 1  \7";
@@ -54,12 +55,11 @@ int main()
             break;
 
     cout << "/Press Arrow UP, DOOWN, LEFT, RIGTH  Esc - exit  \7";
-    car1->Drag(40);  //буксировка ТОЧКИ  Выход - Esc
+    curCar->Drag(40);  //буксировка ТОЧКИ  Выход - Esc
     cout << "/Press 2   \7";
     while (1)
         if (KEY_DOWN(50)) //цифра 2
             break;
-    car1->Hide();
 
     return 0;
 }

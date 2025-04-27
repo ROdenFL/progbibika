@@ -3,6 +3,7 @@
 
 extern HDC hdc;
 extern World world;
+extern CarBody* curCar;
 
 const COLORREF WINDOW_COLOR = RGB(0, 128, 168);
 const COLORREF LIGHTS_COLOR = RGB(250, 250, 0);
@@ -290,23 +291,14 @@ bool Saw::bump_action(BumpObject** bumpedOne)
     // Создаем LowRider на месте машины
     LowRider* lowRider = new LowRider(pBumpOne->GetX(), pBumpOne->GetY(),
         pBumpOne->GetWidth(), pBumpOne->GetHeight());
-
-    // Сначала добавляем новый объект
     world.add_object(lowRider);
-
-    // Затем удаляем старый
     pBumpOne->Hide();
     Hide();
     world.findndelete(pBumpOne);
     world.findndelete(this);
-
-    // Обновляем указатель
-    *bumpedOne = lowRider;
+    curCar = lowRider;
     lowRider->Show();
     lowRider->Drag(40);
-
-    // Не удаляем саму пилу (this), если хотим, чтобы она оставалась
-    // world.findndelete(this);
     return true;
 }
 

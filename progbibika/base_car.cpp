@@ -5,6 +5,7 @@
 
 extern HDC hdc;
 extern World world;
+extern CarBody* curCar;
 using namespace std;
 
 const COLORREF WINDOW_COLOR = RGB(0, 128, 168);

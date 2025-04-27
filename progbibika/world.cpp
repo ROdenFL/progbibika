@@ -4,6 +4,7 @@ using namespace std;
 
 extern HDC hdc;
 
+
 int World::add_object(BumpObject* newObject)
 {
 	if (total_objects >= OBJECTS_LIMIT)
