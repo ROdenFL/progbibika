@@ -45,10 +45,7 @@ void CarPart::SetAltHideRGB(int R, int G, int B)
 
 void CarPart::Show(int baseX, int baseY) 
 {
-    int check = world.check_bump(this);
-    if (check)
-        return;
-
+    world.check_bump(this);
 }
 void CarPart::Hide(int baseX, int baseY) {}
 
@@ -123,11 +120,11 @@ void CarBody::PopulateParts()
         delete parts[i];
     }
     parts_quantity = 0;
-    parts[parts_quantity++] = new Wheel(width / 4, height);
-    parts[parts_quantity++] = new Wheel(width * 3 / 4, height);
+    parts[parts_quantity++] = new Wheel(width / 4, height, width/6, width/12);
+    parts[parts_quantity++] = new Wheel(width * 3 / 4, height, width / 6, width / 12);
 }
 
-bool CarBody::bump_action(BumpObject** bumpedOne)
+void CarBody::bump_action(BumpObject** bumpedOne)
 {
     BumpObject* pBumpOne = *bumpedOne;
     int left = min(pBumpOne->GetX(), GetX());
@@ -139,10 +136,8 @@ bool CarBody::bump_action(BumpObject** bumpedOne)
     Hide();
     world.make_explode(right, top, left, bottom);
     world.findndelete(pBumpOne);
-    //world.findndelete(this);
-
+    world.findndelete(this);
     *bumpedOne = NULL;
-    return true;
 }
 
 void CarBody::Show()

@@ -9,7 +9,7 @@ protected:
 	int total_objects = 0;
 public:
 	int add_object(BumpObject* newObject);
-	int check_bump(BumpObject* bumpObject);
+	void check_bump(BumpObject* bumpObject);
 	void findndelete(BumpObject* bumpObject);
 	void make_explode(int x1, int y1, int x2, int y2);
 };

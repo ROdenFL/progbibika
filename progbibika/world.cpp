@@ -15,7 +15,7 @@ int World::add_object(BumpObject* newObject)
 	return 0;
 }
 
-int World::check_bump(BumpObject* bumpObject)
+void World::check_bump(BumpObject* bumpObject)
 {
 	BumpObject* curObject;
 	BumpObject* crushObject = NULL;
@@ -40,10 +40,9 @@ int World::check_bump(BumpObject* bumpObject)
 	}
 	
 	if (!crushObject)
-		return 0;
+		return;
 
-	
-	return crushObject->bump_action(&bumpObject);
+	crushObject->bump_action(&bumpObject);
 
 }
 
@@ -54,7 +53,7 @@ void World::findndelete(BumpObject* object)
 		if (objects[i] == object)
 		{
 			// Сдвигаем все элементы после найденного
-			for (int j = i; j < total_objects - 1; j++)
+			for (int j = i; j < total_objects; j++)
 			{
 				objects[j] = objects[j + 1];
 			}

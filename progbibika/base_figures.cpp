@@ -102,13 +102,12 @@ void Point::SetVisible(bool NewVisible)
     Visible = NewVisible;
 }
 
-bool Point::MoveTo(int NewX, int NewY)
+void Point::MoveTo(int NewX, int NewY)
 {
     Hide();
     X = NewX;
     Y = NewY;
     Show();
-    return false;
 };
 
 void Point::Drag(int Step)
@@ -129,32 +128,28 @@ void Point::Drag(int Step)
         if (KEY_DOWN(VK_LEFT))
         {
             FigX -= Step;
-            if(MoveTo(FigX, FigY))
-                break;
+            MoveTo(FigX, FigY);
             Sleep(500);
         }
 
         if (KEY_DOWN(VK_RIGHT))
         {
             FigX += Step;
-            if (MoveTo(FigX, FigY))
-                break;
+            MoveTo(FigX, FigY);
             Sleep(500);
         }
 
         if (KEY_DOWN(VK_UP))
         {
             FigY -= Step;
-            if (MoveTo(FigX, FigY))
-                break;
+            MoveTo(FigX, FigY);
             Sleep(500);
         }
 
         if (KEY_DOWN(VK_DOWN))
         {
             FigY += Step;
-            if (MoveTo(FigX, FigY))
-                break;
+            MoveTo(FigX, FigY);
             Sleep(500);
         }
 
@@ -165,7 +160,7 @@ BumpObject::BumpObject(int InitX, int InitY) : Point(InitX, InitY) {}; // констр
 BumpObject::~BumpObject() {}; //деконструктор 
 
 // действие, вызывающееся в момент аварии
-bool BumpObject::bump_action(BumpObject** bumpedOne) { return false; };
+void BumpObject::bump_action(BumpObject** bumpedOne) {};
 
 int BumpObject::GetWidth()
 {
@@ -177,14 +172,11 @@ int BumpObject::GetHeight()
     return height;
 }
 
-bool BumpObject::MoveTo(int NewX, int NewY)
+void BumpObject::MoveTo(int NewX, int NewY)
 {
     Hide();
     X = NewX;
     Y = NewY;
     Show();
-    int check = world.check_bump(this);
-    if (check)
-        return true;
-    return false;
+    world.check_bump(this);
 };

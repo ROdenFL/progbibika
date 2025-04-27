@@ -41,13 +41,19 @@ int main()
         return 2; 
     }
 
-    curCar = new CarBody(x0, y0);
+    curCar = new CarBody(x0, y0, 150, 100);
 
-    Saw car2(600, 200, 200, 200);
+    Saw saw(400, 200, 100, 100);
+    Roof roof(600, 200, 100, 100);
+    CarBody car(800, 200, 150, 100);
     world.add_object(curCar);
-    world.add_object(&car2);
+    world.add_object(&saw);
+    world.add_object(&roof);
+    world.add_object(&car);
     curCar->Show();
-    car2.Show();
+    saw.Show();
+    roof.Show();
+    car.Show();
 
     cout << "/Press 1  \7";
     while (1)

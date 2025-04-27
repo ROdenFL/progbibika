@@ -6,7 +6,7 @@ class CarPart : public BumpObject
 {
 protected:
 	int altRGB[3] = { 255, 0, 0 };
-	int altHideRGB[3] = { 0, 0, 255 };
+	int altHideRGB[3] = { 255, 255, 255 };
 public:
 	CarPart(int initX = 10, int initY = 10);
 	~CarPart(void);
@@ -43,7 +43,7 @@ public:
 	void Hide(); // перегрузка родительской функции Hide
 	
 	virtual void PopulateParts(); // —бор основных частей машины, €вл€ющихс€ отдельными объектами
-	bool bump_action(BumpObject** bumpedOne);
+	void bump_action(BumpObject** bumpedOne);
 	
 	//‘ункции отрисовки частей машины
 	virtual void DrawBody();	// ќтрисовка основного тела машины

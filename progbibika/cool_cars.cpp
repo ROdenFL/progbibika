@@ -284,7 +284,7 @@ Saw::Saw(int InitX, int InitY, int initWidth, int initHeight) : BumpObject(InitX
     height = initHeight;
 }
 
-bool Saw::bump_action(BumpObject** bumpedOne)
+void Saw::bump_action(BumpObject** bumpedOne)
 {
     BumpObject* pBumpOne = *bumpedOne;
 
@@ -299,7 +299,6 @@ bool Saw::bump_action(BumpObject** bumpedOne)
     curCar = lowRider;
     lowRider->Show();
     lowRider->Drag(40);
-    return true;
 }
 
 void Saw::Show() {
@@ -318,4 +317,85 @@ void Saw::Show() {
             LineTo(hdc, startX + toothWidth, Y + height / 2);
         }
     }
+}
+
+void Saw::Hide() {
+    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+    SelectObject(hdc, GetStockObject(WHITE_PEN));
+
+    // Закрашиваем основную линию пилы (прямоугольник вокруг линии)
+    Rectangle(hdc, X, Y + height / 2 - 2, X + width, Y + height / 2 + 2);
+
+    // Закрашиваем зубцы пилы
+    int toothWidth = width / 10;
+    for (int i = 0; i < 10; i++) {
+        int startX = X + i * toothWidth;
+        if (i % 2 == 0) {
+            // Закрашиваем треугольник зубца
+            POINT triangle[3] = {
+                {startX, Y + height / 2},
+                {startX + toothWidth / 2, Y},
+                {startX + toothWidth, Y + height / 2}
+            };
+            Polygon(hdc, triangle, 3);
+        }
+    }
+}
+
+Roof::Roof(int InitX, int InitY, int initWidth, int initHeight) : BumpObject(InitX, InitY)
+{
+    width = initWidth;
+    height = initHeight;
+}
+
+void Roof::bump_action(BumpObject** bumpedOne)
+{
+    BumpObject* pBumpOne = *bumpedOne;
+
+    // Создаем LowRider на месте машины
+    Gazel* gazel = new Gazel(pBumpOne->GetX(), pBumpOne->GetY(),
+        pBumpOne->GetWidth(), pBumpOne->GetHeight());
+    world.add_object(gazel);
+    pBumpOne->Hide();
+    Hide();
+    world.findndelete(pBumpOne);
+    world.findndelete(this);
+    curCar = gazel;
+    gazel->Show();
+    gazel->Drag(40);
+}
+
+
+void Roof::Show()
+{
+    HPEN Pen = CreatePen(PS_SOLID, 2, GetBaseRGB());
+    HBRUSH hBrush = CreateSolidBrush(GetBaseRGB());
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+
+    Rectangle(hdc, X, Y + height, X + width / 2, Y + height / 2);
+
+    POINT triangle[3] = {
+        {X + width / 2, Y + height / 2},
+        {X + width / 2, Y + height},
+        {X + width, Y + height}
+    };
+    Polygon(hdc, triangle, 3);
+}
+
+void Roof::Hide()
+{
+    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+    SelectObject(hdc, GetStockObject(WHITE_PEN));
+
+    // Стираем квадрат
+    Rectangle(hdc, X, Y, X + width / 2, Y + height / 2);
+
+    // Стираем треугольник (координаты те же, что и в Show)
+    POINT triangle[3] = {
+        {X + width / 2, Y + height / 2},
+        {X + width / 2, Y + height},
+        {X + width, Y + height}
+    };
+    Polygon(hdc, triangle, 3);
 }

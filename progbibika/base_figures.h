@@ -26,7 +26,7 @@ protected:
     //Основной цвет объекта
     int baseRGB[3] = { 255, 0, 0 };
     //Цвет спрятанного объекта
-    int hideRGB[3] = { 0, 0, 255 };
+    int hideRGB[3] = { 255, 255, 255 };
     
 public:
     Point(int InitX, int InitY); // конструктор
@@ -39,7 +39,7 @@ public:
     void SetHideRGB(int R, int G, int B); // сеттер цвета спрятонного объекта
     void Drag(int Step); // функция перемещения объекта на стрелки
     
-    virtual bool MoveTo(int NewX, int NewY);
+    virtual void MoveTo(int NewX, int NewY);
     virtual void Show();
     virtual void Hide(); 
 };
@@ -52,8 +52,8 @@ protected:
 public:
     BumpObject(int InitX, int InitY); // конструктор
     ~BumpObject(); //деконструктор 
-    virtual bool bump_action(BumpObject** bumpedOne); // действией, вызывающееся в момент аварии
-    virtual bool MoveTo(int NewX, int NewY);
+    virtual void bump_action(BumpObject** bumpedOne); // действией, вызывающееся в момент аварии
+    virtual void MoveTo(int NewX, int NewY);
 
     int GetWidth(); // гетер для ширины
     int GetHeight(); // гетер для высоты 
