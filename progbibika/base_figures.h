@@ -44,16 +44,17 @@ public:
     virtual void Hide(); 
 };
 
-class BumpObject : public Point
+//объект столкновения
+class ABCWorldObject : public Point
 {
 protected:
-    int width = 0;
-    int height = 0;
+    int width = 0; //ширина
+    int height = 0; //длина
 public:
-    BumpObject(int InitX, int InitY); // конструктор
-    ~BumpObject(); //деконструктор 
-    virtual void bump_action(BumpObject* bumpedOne); // действией, вызывающееся в момент аварии
-    virtual void MoveTo(int NewX, int NewY);
+    ABCWorldObject(int InitX, int InitY, int initWidth, int initHeight); // конструктор
+    ~ABCWorldObject(); //деконструктор 
+    virtual void bump_action(ABCWorldObject* bumpedOne) = 0; // действие, вызывающееся в момент аварии
+    void MoveTo(int NewX, int NewY); // перегрузка MoveTo для объектов столкновения
 
     int GetWidth(); // гетер для ширины
     int GetHeight(); // гетер для высоты 

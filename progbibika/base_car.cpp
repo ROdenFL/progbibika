@@ -11,7 +11,7 @@ using namespace std;
 const COLORREF WINDOW_COLOR = RGB(0, 128, 168);
 const COLORREF LIGHTS_COLOR = RGB(250, 250, 0);
 
-CarPart::CarPart(int InitX, int InitY) :BumpObject(InitX, InitY)
+CarPart::CarPart(int InitX, int InitY, int initWidth, int initHeight) :ABCWorldObject(InitX, InitY, initWidth, initHeight)
 {
 };
 
@@ -47,14 +47,18 @@ void CarPart::Show(int baseX, int baseY)
 {
     world.check_bump(this);
 }
+
 void CarPart::Hide(int baseX, int baseY) {}
 
-Wheel::Wheel(int initX, int initY, int initTireRadius, int initDiskRadius) :CarPart(initX, initY)
+//действие, если в машину врежится другая машина
+void CarPart::bump_action(ABCWorldObject* bumpedOne)
 {
-    tireRadius = initTireRadius;
-    diskRadius = initDiskRadius;
-    width = tireRadius * 2;
-    height = width;
+}
+
+Wheel::Wheel(int initX, int initY, int initWidth, int initHeight) : CarPart(initX, initY, initWidth, initHeight)
+{
+    tireRadius = width;
+    diskRadius = width/2;
     SetBaseRGB(0, 0, 0);
     SetAltRGB(128, 128, 128);
 }
@@ -97,10 +101,8 @@ void Wheel::Hide(int baseX, int baseY)
     DeleteObject(Pen);
 }
 
-Car::Car(int initX, int initY, int initWidth, int initHeight) :CarPart(initX, initY)
+Car::Car(int initX, int initY, int initWidth, int initHeight) :CarPart(initX, initY, initWidth, initHeight)
 {
-    width = initWidth;
-    height = initHeight;
     PopulateParts();
 }
 
@@ -110,6 +112,12 @@ Car::~Car()
     {
         delete parts[i];
     }
+}
+
+//возвращает индекс класса в иерархии
+int Car::GetIndex()
+{
+    return index;
 }
 
 // Создание частей машины являющихся отдельными объектами
@@ -124,7 +132,8 @@ void Car::PopulateParts()
     parts[parts_quantity++] = new Wheel(width * 3 / 4, height, width / 6, width / 12);
 }
 
-void Car::bump_action(BumpObject* bumpedOne)
+//действие, если в машину врежится другая машина
+void Car::bump_action(ABCWorldObject* bumpedOne)
 {
     int left = min(bumpedOne->GetX(), GetX());
     int right = max(bumpedOne->GetX() + bumpedOne->GetWidth(), GetX() + GetWidth());
@@ -229,6 +238,7 @@ void Car::HideBody()
     DeleteObject(Pen);
 }
 
+//прятанье частей машины
 void Car::HideParts()
 {
     HideWindow();
@@ -236,14 +246,17 @@ void Car::HideParts()
     HideRoof();
 }
 
+//прятанье окна
 void Car::HideWindow()
 {
 }
 
+//прятанье фар
 void Car::HideLights()
 {
 }
 
+//прятанье крыши
 void Car::HideRoof()
 {
     HPEN Pen = CreatePen(PS_SOLID, 2, GetHideRGB());

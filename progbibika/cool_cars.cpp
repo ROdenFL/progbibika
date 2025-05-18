@@ -5,14 +5,84 @@ extern HDC hdc;
 extern World world;
 extern Car* curCar;
 
+#define CAR_CLASSES_QUANTITY 12
+#define BUMP_CLASSES_QUANTITY 3
+
+extern Car* cars_array[CAR_CLASSES_QUANTITY];
+extern int car_migration[CAR_CLASSES_QUANTITY][BUMP_CLASSES_QUANTITY];
+extern int startx;
+extern int starty;
+
 const COLORREF WINDOW_COLOR = RGB(0, 128, 168);
 const COLORREF LIGHTS_COLOR = RGB(250, 250, 0);
 #define KEY_DOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
+
+// конструктор
+DoubleDeck::DoubleDeck(int initX, int initY, int initWidth, int initHeight) : Car(initX, initY, initWidth, initHeight)
+{
+    index = 5;
+}
+
+void DoubleDeck::DrawRoof()
+{
+    HPEN Pen = CreatePen(PS_SOLID, 2, GetBaseRGB());
+    HBRUSH hBrush = CreateSolidBrush(GetBaseRGB());
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Rectangle(hdc, X + width / 4, Y-height, X + width * 3 / 4, Y + height / 2);
+    DeleteObject(hBrush);
+    DeleteObject(Pen);
+}
+
+//прятанье крыши
+void DoubleDeck::HideRoof()
+{
+    HPEN Pen = CreatePen(PS_SOLID, 2, GetHideRGB());
+    HBRUSH hBrush = CreateSolidBrush(GetHideRGB());
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Rectangle(hdc, X + width / 4, Y - height, X + width * 3 / 4, Y + height / 2);
+    DeleteObject(hBrush);
+    DeleteObject(Pen);
+}
+
+// конструктор
+DoubleDeckTireless::DoubleDeckTireless(int initX, int initY, int initWidth, int initHeight) : DoubleDeck(initX, initY, initWidth, initHeight)
+{
+    index = 6;
+    PopulateParts();
+}
+
+void DoubleDeckTireless::PopulateParts()
+{
+    parts_quantity = 0;
+}
+
+// конструктор
+CarTireThree::CarTireThree(int initX, int initY, int initWidth, int initHeight) : Car(initX, initY, initWidth, initHeight)
+{
+    index = 10;
+    PopulateParts();
+}
+
+// Сбор основных частей машины, являющихся отдельными объектами
+void CarTireThree::PopulateParts()
+{
+    for (int i = 0; i < parts_quantity; i++)
+    {
+        delete parts[i];
+    }
+    parts_quantity = 0;
+    parts[parts_quantity++] = new Wheel(width / 4, height, width / 6, width / 12);
+    parts[parts_quantity++] = new Wheel(width / 2, height, width / 6, width / 12);
+    parts[parts_quantity++] = new Wheel(width * 3 / 4, height, width / 6, width / 12);
+}
 
 //Класс лоурайдер
 
 LowRider::LowRider(int initX, int initY, int initWidth, int initHeight) :Car(initX, initY, initWidth, initHeight)
 {
+    index = 1; // присвоение индекса класса лоурайдера
     SetBaseRGB(192, 5, 248);
     SetAltRGB(104, 88, 243);
 }
@@ -180,6 +250,7 @@ void LowRider::HideRoof()
 
 Gazel::Gazel(int initX, int initY, int initWidth, int initHeight) :Car(initX, initY, initWidth, initHeight)
 {
+    index = 2; // присвоение индекса класса газели
     SetBaseRGB(60, 60, 60);
     SetAltRGB(0, 0, 0);
 }
@@ -278,31 +349,212 @@ void Gazel::HideWindow()
     DeleteObject(Pen);
 }
 
-Saw::Saw(int InitX, int InitY, int initWidth, int initHeight) : BumpObject(InitX, InitY) 
+// конструктор
+LowRiderTireless::LowRiderTireless(int initX, int initY, int initWidth, int initHeight) : LowRider(initX, initY, initWidth, initHeight)
 {
-    width = initWidth;
-    height = initHeight;
+    index = 3;
+    PopulateParts();
 }
 
-void Saw::bump_action(BumpObject* bumpedOne)
+// Сбор основных частей машины, являющихся отдельными объектами
+void LowRiderTireless::PopulateParts()
 {
-    // Создаем LowRider на месте машины
-    LowRider* lowRider = new LowRider(bumpedOne->GetX(), bumpedOne->GetY(),
-        bumpedOne->GetWidth(), bumpedOne->GetHeight());
-    world.add_object(lowRider);
-    bumpedOne->Hide();
-    Hide();
-    world.findndelete(bumpedOne);
-    world.findndelete(this);
-    curCar = lowRider;
-    lowRider->Show();
-    lowRider->Drag(40);
+    parts_quantity = 0;
+}
+
+// конструктор
+LowRiderTireThree::LowRiderTireThree(int initX, int initY, int initWidth, int initHeight) : LowRider(initX, initY, initWidth, initHeight)
+{
+    index = 8;
+    PopulateParts();
+}
+
+// Сбор основных частей машины, являющихся отдельными объектами
+void LowRiderTireThree::PopulateParts()
+{
+    for (int i = 0; i < parts_quantity; i++)
+    {
+        delete parts[i];
+    }
+    parts_quantity = 0;
+    parts[parts_quantity++] = new Wheel(width / 4, height, width / 6, width / 12);
+    parts[parts_quantity++] = new Wheel(width / 2, height, width / 6, width / 12);
+    parts[parts_quantity++] = new Wheel(width * 3 / 4, height, width / 6, width / 12);
+}
+
+// конструктор
+GazelTireless::GazelTireless(int initX, int initY, int initWidth, int initHeight) : Gazel(initX, initY, initWidth, initHeight)
+{
+    index = 4;
+    PopulateParts();
+}
+
+// Сбор основных частей машины, являющихся отдельными объектами
+void GazelTireless::PopulateParts()
+{
+    parts_quantity = 0;
+}
+
+// конструктор
+GazelTireThree::GazelTireThree(int initX, int initY, int initWidth, int initHeight) : Gazel(initX, initY, initWidth, initHeight)
+{
+    index = 9;
+    PopulateParts();
+}
+
+// Сбор основных частей машины, являющихся отдельными объектами
+void GazelTireThree::PopulateParts()
+{
+    for (int i = 0; i < parts_quantity; i++)
+    {
+        delete parts[i];
+    }
+    parts_quantity = 0;
+    parts[parts_quantity++] = new Wheel(width / 4, height, width / 6, width / 12);
+    parts[parts_quantity++] = new Wheel(width / 2, height, width / 6, width / 12);
+    parts[parts_quantity++] = new Wheel(width * 3 / 4, height, width / 6, width / 12);
+}
+
+// конструктор
+GazelDD::GazelDD(int initX, int initY, int initWidth, int initHeight) : Gazel(initX, initY, initWidth, initHeight)
+{
+    index = 7;
+}
+
+void GazelDD::DrawRoof()
+{
+    HPEN Pen = CreatePen(PS_SOLID, 2, GetBaseRGB());
+    HBRUSH hBrush = CreateSolidBrush(GetBaseRGB());
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Rectangle(hdc, X + width / 3, Y + height / 2, X + width, Y - height);
+    Pen = CreatePen(PS_SOLID, 2, GetAltRGB());
+    hBrush = CreateSolidBrush(GetAltRGB());
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Rectangle(hdc, X + width / 3, Y + height / 2, X + width, Y + height / 4);
+    DeleteObject(hBrush);
+    DeleteObject(Pen);
+}
+
+void GazelDD::HideRoof()
+{
+    HPEN Pen = CreatePen(PS_SOLID, 2, GetHideRGB());
+    HBRUSH hBrush = CreateSolidBrush(GetHideRGB());
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Rectangle(hdc, X + width / 3, Y + height / 2, X + width, Y - height);
+    DeleteObject(hBrush);
+    DeleteObject(Pen);
+}
+
+//Конструктор
+Truck::Truck(int InitX, int InitY, int initWidth, int initHeight) : Car(InitX, InitY, initWidth, initHeight)
+{
+    index = 11;
+    width = initWidth * 2;
+    PopulateParts();
+    SetBaseRGB(255, 128, 0);
+}
+
+// Отрисовка окна
+void Truck::DrawWindow() 
+{
+    POINT triangle[3];
+    triangle[0].x = X;
+    triangle[0].y = Y + height / 2;
+    triangle[1].x = X + width / 3;
+    triangle[1].y = Y + height / 2;
+    triangle[2].x = X + width / 5;
+    triangle[2].y = Y;
+    HPEN Pen = CreatePen(PS_SOLID, 2, WINDOW_COLOR);
+    HBRUSH hBrush = CreateSolidBrush(WINDOW_COLOR);
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Polygon(hdc, triangle, 3);
+    DeleteObject(hBrush);
+    DeleteObject(Pen);
+}
+
+void Truck::PopulateParts()
+{
+    for (int i = 0; i < parts_quantity; i++)
+    {
+        delete parts[i];
+    }
+    parts_quantity = 0;
+    parts[parts_quantity++] = new Wheel(width / 8, height, width / 12, width / 24);
+    parts[parts_quantity++] = new Wheel(width / 4, height, width / 12, width / 24);
+    parts[parts_quantity++] = new Wheel(width * 3 / 4, height, width / 12, width / 24);
+    parts[parts_quantity++] = new Wheel(width *7/8, height, width / 12, width / 24);
+}
+
+// Отрисовка фар
+void Truck::DrawLights()
+{
+
+}
+
+// Отрисовка крыши
+void Truck::DrawRoof()
+{
+    HPEN Pen = CreatePen(PS_SOLID, 2, GetBaseRGB());
+    HBRUSH hBrush = CreateSolidBrush(GetBaseRGB());
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Rectangle(hdc, X + width / 5, Y + height / 2, X + width/2, Y);
+    DeleteObject(hBrush);
+    DeleteObject(Pen);
+}
+
+// Прятанье окна
+void Truck::HideWindow()
+{
+    HPEN Pen = CreatePen(PS_SOLID, 2, RGB(255, 255, 255));
+    HBRUSH hBrush = CreateSolidBrush(RGB(255, 255, 255));
+    POINT triangle[3];
+    triangle[0].x = X;
+    triangle[0].y = Y + height / 2;
+    triangle[1].x = X + width / 3;
+    triangle[1].y = Y + height / 2;
+    triangle[2].x = X + width / 5;
+    triangle[2].y = Y;
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Polygon(hdc, triangle, 3);
+    DeleteObject(hBrush);
+    DeleteObject(Pen);
+}
+// Прятанье фар
+void Truck::HideLights()
+{
+
+}
+
+// Прятанье крыши
+void Truck::HideRoof()
+{
+    HPEN Pen = CreatePen(PS_SOLID, 2, RGB(255,255,255));
+    HBRUSH hBrush = CreateSolidBrush(RGB(255, 255, 255));
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Rectangle(hdc, X + width / 5, Y + height / 2, X + width / 2, Y);
+    DeleteObject(hBrush);
+    DeleteObject(Pen);
+}
+
+//конструктор
+Saw::Saw(int InitX, int InitY, int initWidth, int initHeight) : ABCWorldObject(InitX, InitY, initWidth, initHeight)
+{
+    index = 0;
 }
 
 void Saw::Show() {
+    SelectObject(hdc, GetStockObject(BLACK_PEN));
+    SelectObject(hdc, GetStockObject(BLACK_BRUSH));
     // Основная линия пилы (горизонтальная)
-    MoveToEx(hdc, X, Y + height / 2, NULL);
-    LineTo(hdc, X + width, Y + height / 2);
+    MoveToEx(hdc, X, Y + height, NULL);
+    LineTo(hdc, X + width, Y + height);
 
     // Зубцы пилы
     int toothWidth = width / 10;
@@ -310,9 +562,9 @@ void Saw::Show() {
         int startX = X + i * toothWidth;
         if (i % 2 == 0) {
             // Верхний зубец
-            MoveToEx(hdc, startX, Y + height / 2, NULL);
+            MoveToEx(hdc, startX, Y + height, NULL);
             LineTo(hdc, startX + toothWidth / 2, Y);
-            LineTo(hdc, startX + toothWidth, Y + height / 2);
+            LineTo(hdc, startX + toothWidth, Y + height);
         }
     }
 }
@@ -322,7 +574,7 @@ void Saw::Hide() {
     SelectObject(hdc, GetStockObject(WHITE_PEN));
 
     // Закрашиваем основную линию пилы (прямоугольник вокруг линии)
-    Rectangle(hdc, X, Y + height / 2 - 2, X + width, Y + height / 2 + 2);
+    Rectangle(hdc, X, Y - height / 2 - 2, X + width, Y + height / 2 + 2);
 
     // Закрашиваем зубцы пилы
     int toothWidth = width / 10;
@@ -331,35 +583,37 @@ void Saw::Hide() {
         if (i % 2 == 0) {
             // Закрашиваем треугольник зубца
             POINT triangle[3] = {
-                {startX, Y + height / 2},
+                {startX, Y - height / 2},
                 {startX + toothWidth / 2, Y},
-                {startX + toothWidth, Y + height / 2}
+                {startX + toothWidth, Y - height / 2}
             };
             Polygon(hdc, triangle, 3);
         }
     }
 }
 
-Roof::Roof(int InitX, int InitY, int initWidth, int initHeight) : BumpObject(InitX, InitY)
+// действие, вызывающееся в момент аварии
+void Saw::bump_action(ABCWorldObject* bumpedOne)
 {
-    width = initWidth;
-    height = initHeight;
-}
-
-void Roof::bump_action(BumpObject* bumpedOne)
-{
-    Gazel* gazel = new Gazel(bumpedOne->GetX(), bumpedOne->GetY(),
-        bumpedOne->GetWidth(), bumpedOne->GetHeight());
-    world.add_object(gazel);
+    //проверка является ли столкнувшийся объект, объектом подходящим для взаимодействия
+    if (bumpedOne != curCar)
+        return;
+    //прячем старую машину
+    bumpedOne->MoveTo(startx, starty);
     bumpedOne->Hide();
-    Hide();
+    //удаление из списка объектов для столкновеня
     world.findndelete(bumpedOne);
-    world.findndelete(this);
-    curCar = gazel;
-    gazel->Show();
-    gazel->Drag(40);
-}
+    //переназначение указателя на новую машину
+    curCar = cars_array[car_migration[curCar->GetIndex()][index]];
+    curCar->Show();
+    Show();
+    curCar->Drag(40);
+};
 
+Roof::Roof(int InitX, int InitY, int initWidth, int initHeight) : Saw(InitX, InitY, initWidth, initHeight)
+{
+    index = 1;
+}
 
 void Roof::Show()
 {
@@ -393,4 +647,38 @@ void Roof::Hide()
         {X + width, Y + height}
     };
     Polygon(hdc, triangle, 3);
+}
+
+//конструктор
+ExtraTire::ExtraTire(int InitX, int InitY, int initWidth, int initHeight) : Saw(InitX, InitY, initWidth, initHeight)
+{
+    index = 2;
+}
+
+void ExtraTire::Show() {
+    Visible = true;
+    HPEN Pen = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
+    HBRUSH hBrush = CreateSolidBrush(RGB(0, 0, 0));
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Ellipse(hdc, X - width/2, Y - width/2, X + width/2, Y + width/2);
+    DeleteObject(Pen);
+    DeleteObject(hBrush);
+    Pen = CreatePen(PS_SOLID, 2, RGB(128, 128, 128));
+    hBrush = CreateSolidBrush(RGB(128, 128, 128));
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Ellipse(hdc, X - width/4, Y - width/4, X + width/4, Y + width/4);
+    DeleteObject(Pen);
+    DeleteObject(hBrush);
+}
+
+void ExtraTire::Hide() {
+    Visible = false;
+    HPEN Pen = CreatePen(PS_SOLID, 2, GetHideRGB());
+    HBRUSH hBrush = CreateSolidBrush(GetHideRGB());
+    SelectObject(hdc, Pen);
+    SelectObject(hdc, hBrush);
+    Ellipse(hdc, X - width/2, Y - width/2, X + width/2, Y + width/2);
+    DeleteObject(Pen);
 }

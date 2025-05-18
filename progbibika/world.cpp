@@ -4,8 +4,8 @@ using namespace std;
 
 extern HDC hdc;
 
-
-int World::add_object(BumpObject* newObject)
+//добавление объекта в список объектов столкновения
+int World::add_object(ABCWorldObject* newObject)
 {
 	if (total_objects >= OBJECTS_LIMIT)
 	{
@@ -15,10 +15,11 @@ int World::add_object(BumpObject* newObject)
 	return 0;
 }
 
-void World::check_bump(BumpObject* bumpObject)
+void World::check_bump(ABCWorldObject* bumpObject)
 {
-	BumpObject* curObject;
-	BumpObject* crushObject = NULL;
+	ABCWorldObject* curObject;
+	ABCWorldObject* crushObject = NULL;
+	//поиск объекта с ненулевой площадью пересечения
 	for (int i = 0; i < total_objects; i++)
 	{
 		curObject = objects[i];
@@ -26,8 +27,8 @@ void World::check_bump(BumpObject* bumpObject)
 
 		int left	=	max(bumpObject->GetX(), curObject->GetX());
 		int right	=	min(bumpObject->GetX() + bumpObject->GetWidth(), curObject->GetX() + curObject->GetWidth());
-		int bottom = max(bumpObject->GetY(), curObject->GetY());
-		int top = min(bumpObject->GetY() + bumpObject->GetHeight(), curObject->GetY() + curObject->GetHeight());
+		int bottom	=	max(bumpObject->GetY(), curObject->GetY());
+		int top		=	min(bumpObject->GetY() + bumpObject->GetHeight(), curObject->GetY() + curObject->GetHeight());
 
 		int width = right - left;
 		int height = top - bottom;
@@ -39,14 +40,15 @@ void World::check_bump(BumpObject* bumpObject)
 		break;
 	}
 	
+	//если объект не найден
 	if (!crushObject)
 		return;
 
+	//вызов функции столкновения
 	crushObject->bump_action(bumpObject);
-
 }
 
-void World::findndelete(BumpObject* object)
+void World::findndelete(ABCWorldObject* object)
 {
 	for (int i = 0; i < total_objects; i++)
 	{

@@ -4,9 +4,16 @@
 /***********************************************************************/
 /*   Г Л О Б А Л Ь Н Ы Е   К О Н С Т А Н Т Ы  И  П Е Р Е М Е Н Н Ы Е   */
 /***********************************************************************/
+#define CAR_CLASSES_QUANTITY 12
+#define BUMP_CLASSES_QUANTITY 3
 
 extern HDC hdc;    
 extern World world;
+extern Car* curCar;
+extern Car* cars_array[CAR_CLASSES_QUANTITY];
+extern int car_migration[CAR_CLASSES_QUANTITY][BUMP_CLASSES_QUANTITY];
+extern int startx;
+extern int starty;
 
 #define KEY_DOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
 
@@ -119,9 +126,6 @@ void Point::Drag(int Step)
 
     while (true)
     {
-        if (!this)
-            break;
-
         if (KEY_DOWN(VK_ESCAPE)) 
             break;
 
@@ -129,54 +133,61 @@ void Point::Drag(int Step)
         {
             FigX -= Step;
             MoveTo(FigX, FigY);
-            Sleep(500);
+            Sleep(100);
         }
 
         if (KEY_DOWN(VK_RIGHT))
         {
             FigX += Step;
             MoveTo(FigX, FigY);
-            Sleep(500);
+            Sleep(100);
         }
 
         if (KEY_DOWN(VK_UP))
         {
             FigY -= Step;
             MoveTo(FigX, FigY);
-            Sleep(500);
+            Sleep(100);
         }
 
         if (KEY_DOWN(VK_DOWN))
         {
             FigY += Step;
             MoveTo(FigX, FigY);
-            Sleep(500);
+            Sleep(100);
         }
 
     }   
 }
 
-BumpObject::BumpObject(int InitX, int InitY) : Point(InitX, InitY) {}; // конструктор
-BumpObject::~BumpObject() {}; //деконструктор 
 
-// действие, вызывающееся в момент аварии
-void BumpObject::bump_action(BumpObject* bumpedOne) {};
+// конструктор
+ABCWorldObject::ABCWorldObject(int InitX, int InitY, int initWidth, int initHeight) : Point(InitX, InitY)
+{
+    width = initWidth;
+    height = initHeight;
+};
 
-int BumpObject::GetWidth()
+ABCWorldObject::~ABCWorldObject() {}; //деконструктор 
+
+//геттер ширины
+int ABCWorldObject::GetWidth()
 {
     return width;
 }
 
-int BumpObject::GetHeight()
+//геттер длины
+int ABCWorldObject::GetHeight()
 {
     return height;
 }
 
-void BumpObject::MoveTo(int NewX, int NewY)
+//MoveTo с проверкой столкновения
+void ABCWorldObject::MoveTo(int NewX, int NewY)
 {
     Hide();
     X = NewX;
     Y = NewY;
     Show();
-    world.check_bump(this);
+    world.check_bump(this); //проверка столкновения
 };

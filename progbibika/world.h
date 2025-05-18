@@ -5,11 +5,11 @@
 class World
 {
 protected:
-	BumpObject* objects[OBJECTS_LIMIT];
+	ABCWorldObject* objects[OBJECTS_LIMIT];
 	int total_objects = 0;
 public:
-	int add_object(BumpObject* newObject);
-	void check_bump(BumpObject* bumpObject);
-	void findndelete(BumpObject* bumpObject);
-	void make_explode(int x1, int y1, int x2, int y2);
+	int add_object(ABCWorldObject* newObject); //добавление объекта в "мир"
+	void check_bump(ABCWorldObject* bumpObject); //проверка столкновения
+	void findndelete(ABCWorldObject* bumpObject); //удаление объекта из списка объектов столкновения
+	void make_explode(int x1, int y1, int x2, int y2); //вызов взрыва в заданных координатах
 };
